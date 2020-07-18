@@ -11541,7 +11541,13 @@ static int ImGui::FindPlatformMonitorForRect(const ImRect& rect)
 // Update monitor from viewport rectangle (we'll use this info to clamp windows and save windows lost in a removed monitor)
 static void ImGui::UpdateViewportPlatformMonitor(ImGuiViewportP* viewport)
 {
-    viewport->PlatformMonitor = (short)FindPlatformMonitorForRect(viewport->GetMainRect());
+   ImGuiContext& g = *GImGui;
+   short newPlatformMonitor = (short)FindPlatformMonitorForRect(viewport->GetMainRect());
+   if(viewport->PlatformMonitor != -1 && newPlatformMonitor != viewport->PlatformMonitor && g.PlatformIO.Platform_SetWindowSize) {
+
+       g.PlatformIO.Platform_SetWindowSize(viewport, viewport->Size);
+   }
+   viewport->PlatformMonitor = newPlatformMonitor;
 }
 
 void ImGui::DestroyPlatformWindow(ImGuiViewportP* viewport)
